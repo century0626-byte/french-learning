@@ -2222,10 +2222,37 @@ function speakFrench(text){
     speakWithSystemVoice(text);
     return;
   }
-  playOnlineFrench(text).catch(()=>{
+  playDesktopFrench(text);
+}
+function playDesktopFrench(text){
+  const cleaned=String(text||"").trim();
+  if(!cleaned) return;
+  const el=document.getElementById("voiceStatus");
+  if(currentAudio){
+    currentAudio.pause();
+    currentAudio.src="";
+    currentAudio=null;
+  }
+  const url=`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q=${encodeURIComponent(cleaned)}&textlen=${encodeURIComponent(cleaned.length)}&idx=0&total=1&prev=input&_=${Date.now()}`;
+  const audio=new Audio(url);
+  audio.preload="auto";
+  currentAudio=audio;
+  audio.onerror=()=>{
     const el=document.getElementById("voiceStatus");
     if(el){
       el.textContent="在线法语音频这次没有加载成功，请再点一次。为避免英语口音误导，电脑端不自动回退到系统朗读。";
+      el.classList.add("warn");
+    }
+  };
+  audio.onplay=()=>{
+    if(el){
+      el.textContent="电脑发音模式：正在播放在线法语音频。";
+      el.classList.remove("warn");
+    }
+  };
+  audio.play().catch(()=>{
+    if(el){
+      el.textContent="浏览器阻止了这次播放，请直接再点一次发音按钮。";
       el.classList.add("warn");
     }
   });
