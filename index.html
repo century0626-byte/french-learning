@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>我的法语学习库</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --muted: #5f6368;
+      --line: #dedbd2;
+      --paper: #fbfaf7;
+      --panel: #ffffff;
+      --accent: #246b45;
+      --accent-soft: #eaf4ed;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 36px 18px 64px;
+    }
+    header {
+      padding: 12px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      line-height: 1.25;
+    }
+    .intro {
+      max-width: 720px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+    .section-title {
+      margin: 28px 0 14px;
+      font-size: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      display: block;
+      min-height: 156px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: inherit;
+      text-decoration: none;
+    }
+    .card:hover {
+      border-color: #a7bda7;
+      background: var(--accent-soft);
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 19px;
+      line-height: 1.35;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .tagline {
+      display: inline-block;
+      margin-top: 16px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    footer {
+      margin-top: 34px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    @media (max-width: 640px) {
+      .wrap {
+        padding-top: 26px;
+      }
+      h1 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>我的法语学习库</h1>
+      <p class="intro">这里会慢慢收集我的法语资料：词汇、语法、阅读和练习。每个页面都尽量做成可以搜索、可以听、可以在手机和平板上打开的学习工具。</p>
+    </header>
+
+    <main>
+      <h2 class="section-title">词汇</h2>
+      <div class="grid">
+        <a class="card" href="vocab/3500-french-vocab-study.html">
+          <h2>3500 法语分类词汇大全</h2>
+          <p>分类词汇、搜索、单词发音、例句发音和中文辅助。适合日常快速复习。</p>
+          <span class="tagline">开始学习</span>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      以后新的教材页面会继续加在这里。
+    </footer>
+  </div>
+</body>
+</html>
