@@ -2220,21 +2220,9 @@ function speakFrench(text){
   playOnlineFrench(text).catch(()=>{
     const el=document.getElementById("voiceStatus");
     if(el){
-      el.textContent="在线音频没有播放成功。手机上请确认不是静音模式，并可再点一次；当前会尝试浏览器自带语音。";
+      el.textContent="在线法语音频这次没有加载成功，请再点一次。为避免英语口音误导，电脑端不自动回退到系统朗读。";
       el.classList.add("warn");
     }
-    if(!("speechSynthesis" in window)){
-      alert("当前浏览器不支持朗读功能，可以换用 Edge 或 Chrome 打开。");
-      return;
-    }
-    const voice=frenchVoice||findFrenchVoice();
-    const utterance=new SpeechSynthesisUtterance(text);
-    utterance.lang=voice?.lang||"fr-FR";
-    if(voice) utterance.voice=voice;
-    utterance.rate=0.86;
-    utterance.pitch=1;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
   });
 }
 function speakWithSystemVoice(text){
