@@ -2153,18 +2153,28 @@ let currentAudio=null;
 function isMobileBrowser(){
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 }
+function getAudioPlayer(){
+  if(currentAudio) return currentAudio;
+  currentAudio=document.createElement("audio");
+  currentAudio.id="ttsPlayer";
+  currentAudio.preload="auto";
+  currentAudio.playsInline=true;
+  currentAudio.style.display="none";
+  document.body.appendChild(currentAudio);
+  return currentAudio;
+}
 function playAudioUrl(url){
   return new Promise((resolve,reject)=>{
-    if(currentAudio){
-      currentAudio.pause();
-      currentAudio=null;
-    }
-    const audio=new Audio(url);
+    const audio=getAudioPlayer();
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
     audio.preload="auto";
     audio.playsInline=true;
-    currentAudio=audio;
     audio.onended=()=>resolve();
     audio.onerror=()=>reject(new Error("online audio failed"));
+    audio.src=url;
+    audio.load();
     audio.play().catch(reject);
   });
 }
@@ -2172,14 +2182,9 @@ async function playOnlineFrench(text){
   const cleaned=String(text||"").trim();
   if(!cleaned) throw new Error("empty text");
   const encoded=encodeURIComponent(cleaned);
-  const sources=[
-    `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q=${encoded}`,
-    `https://dict.youdao.com/dictvoice?type=2&le=fr&audio=${encoded}`
-  ];
-  if(isMobileBrowser()){
-    await playAudioUrl(sources[0]);
-    return;
-  }
+  const google=`https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q=${encoded}&_=${Date.now()}`;
+  const youdao=`https://dict.youdao.com/dictvoice?type=2&le=fr&audio=${encoded}&_=${Date.now()}`;
+  const sources=isMobileBrowser()?[youdao,google]:[google,youdao];
   let lastError=null;
   for(const url of sources){
     try{
