@@ -2150,6 +2150,7 @@ function updateVoiceStatus(total){
   el.classList.remove("warn");
 }
 let currentAudio=null;
+let currentUtterance=null;
 function isMobileBrowser(){
   return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
 }
@@ -2210,6 +2211,10 @@ async function playOnlineFrench(text){
   throw lastError||new Error("online audio failed");
 }
 function speakFrench(text){
+  if(isMobileBrowser()){
+    speakWithSystemVoice(text);
+    return;
+  }
   playOnlineFrench(text).catch(()=>{
     const el=document.getElementById("voiceStatus");
     if(el){
@@ -2229,6 +2234,35 @@ function speakFrench(text){
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(utterance);
   });
+}
+function speakWithSystemVoice(text){
+  const el=document.getElementById("voiceStatus");
+  const player=document.getElementById("mobileAudio");
+  if(player) player.classList.remove("show");
+  if(!("speechSynthesis" in window)){
+    alert("当前手机浏览器不支持系统朗读。建议用 Safari、Chrome 或 Edge 打开。");
+    return;
+  }
+  const voice=frenchVoice||findFrenchVoice();
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.resume();
+  setTimeout(()=>{
+    currentUtterance=new SpeechSynthesisUtterance(text);
+    currentUtterance.lang=voice?.lang||"fr-FR";
+    if(voice) currentUtterance.voice=voice;
+    currentUtterance.rate=0.82;
+    currentUtterance.pitch=1;
+    currentUtterance.onend=()=>{ currentUtterance=null; };
+    currentUtterance.onerror=()=>{ currentUtterance=null; };
+    window.speechSynthesis.resume();
+    window.speechSynthesis.speak(currentUtterance);
+  },80);
+  if(el){
+    el.textContent=voice
+      ? `手机发音模式：使用系统法语语音 ${voice.name} (${voice.lang})。`
+      : "手机发音模式：使用系统朗读。若发音像英语，请在手机系统里添加法语语音。";
+    el.classList.toggle("warn",!voice);
+  }
 }
 if("speechSynthesis" in window){
   findFrenchVoice();
