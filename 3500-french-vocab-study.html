@@ -2017,6 +2017,9 @@ function pickVariant(term,row,count){
 function stripArticle(term){
   return term.replace(/^(le |la |l'|les |un |une |des |du |de la |de l')/i,"");
 }
+function ttsUrl(text){
+  return `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q=${encodeURIComponent(text)}`;
+}
 function makeExample(term,row){
   if(!term) return {fr:"J'apprends ce mot aujourd'hui.", zh:"我今天学习这个词。"};
   const lower=term.toLowerCase();
@@ -2126,7 +2129,7 @@ function addStudyCells(){
     const td=document.createElement("td");
     td.className="voice-cell";
     td.innerHTML=term
-      ? `<div class="word-actions"><button class="speak-btn" type="button" data-say="${htmlEscape(term)}">听</button><span class="pron-note">单词 fr-FR</span></div><div class="example"><div class="word-actions"><button class="speak-btn" type="button" data-say="${htmlEscape(example.fr)}">听例句</button><span class="pron-note">例句 fr-FR</span></div><span class="muted">例句：</span><span class="fr">${htmlEscape(example.fr)}</span><span class="cn">${htmlEscape(example.zh)}</span></div>`
+      ? `<div class="word-actions"><a class="speak-btn" href="${htmlEscape(ttsUrl(term))}" target="_blank" rel="noopener" data-say="${htmlEscape(term)}">听</a><span class="pron-note">单词 fr-FR</span></div><div class="example"><div class="word-actions"><a class="speak-btn" href="${htmlEscape(ttsUrl(example.fr))}" target="_blank" rel="noopener" data-say="${htmlEscape(example.fr)}">听例句</a><span class="pron-note">例句 fr-FR</span></div><span class="muted">例句：</span><span class="fr">${htmlEscape(example.fr)}</span><span class="cn">${htmlEscape(example.zh)}</span></div>`
       : `<span class="muted">这一行需要先校对词条。</span>`;
     row.appendChild(td);
   });
@@ -2272,7 +2275,17 @@ if("speechSynthesis" in window){
 }
 document.addEventListener("click",event=>{
   const btn=event.target.closest(".speak-btn");
-  if(btn) speakFrench(btn.dataset.say);
+  if(!btn) return;
+  if(isMobileBrowser()&&btn.tagName==="A"){
+    const el=document.getElementById("voiceStatus");
+    if(el){
+      el.textContent="手机发音模式：打开浏览器音频链接播放；返回本页后可继续点其他词。";
+      el.classList.remove("warn");
+    }
+    return;
+  }
+  event.preventDefault();
+  speakFrench(btn.dataset.say);
 });
 normalizeRows();
 addStudyCells();
