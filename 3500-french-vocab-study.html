@@ -2017,9 +2017,6 @@ function pickVariant(term,row,count){
 function stripArticle(term){
   return term.replace(/^(le |la |l'|les |un |une |des |du |de la |de l')/i,"");
 }
-function ttsUrl(text){
-  return `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=fr&q=${encodeURIComponent(text)}`;
-}
 function makeExample(term,row){
   if(!term) return {fr:"J'apprends ce mot aujourd'hui.", zh:"我今天学习这个词。"};
   const lower=term.toLowerCase();
@@ -2129,7 +2126,7 @@ function addStudyCells(){
     const td=document.createElement("td");
     td.className="voice-cell";
     td.innerHTML=term
-      ? `<div class="word-actions"><a class="speak-btn" href="${htmlEscape(ttsUrl(term))}" target="_blank" rel="noopener" data-say="${htmlEscape(term)}">听</a><span class="pron-note">单词 fr-FR</span></div><div class="example"><div class="word-actions"><a class="speak-btn" href="${htmlEscape(ttsUrl(example.fr))}" target="_blank" rel="noopener" data-say="${htmlEscape(example.fr)}">听例句</a><span class="pron-note">例句 fr-FR</span></div><span class="muted">例句：</span><span class="fr">${htmlEscape(example.fr)}</span><span class="cn">${htmlEscape(example.zh)}</span></div>`
+      ? `<div class="word-actions"><button class="speak-btn" type="button" data-say="${htmlEscape(term)}">听</button><span class="pron-note">单词 fr-FR</span></div><div class="example"><div class="word-actions"><button class="speak-btn" type="button" data-say="${htmlEscape(example.fr)}">听例句</button><span class="pron-note">例句 fr-FR</span></div><span class="muted">例句：</span><span class="fr">${htmlEscape(example.fr)}</span><span class="cn">${htmlEscape(example.zh)}</span></div>`
       : `<span class="muted">这一行需要先校对词条。</span>`;
     row.appendChild(td);
   });
@@ -2149,7 +2146,9 @@ function findFrenchVoice(){
 function updateVoiceStatus(total){
   const el=document.getElementById("voiceStatus");
   if(!el) return;
-  el.textContent="发音模式：优先使用 Google 法语音频；如果不可用，再尝试备用在线音频和浏览器自带语音。";
+  el.textContent=isMobileBrowser()
+    ? "手机发音模式：使用手机系统朗读。若没有声音或发音像英语，请在手机系统里添加法语语音。"
+    : "电脑发音模式：优先使用在线法语音频；如果不可用，再尝试浏览器自带语音。";
   el.classList.remove("warn");
 }
 let currentAudio=null;
@@ -2276,14 +2275,6 @@ if("speechSynthesis" in window){
 document.addEventListener("click",event=>{
   const btn=event.target.closest(".speak-btn");
   if(!btn) return;
-  if(isMobileBrowser()&&btn.tagName==="A"){
-    const el=document.getElementById("voiceStatus");
-    if(el){
-      el.textContent="手机发音模式：打开浏览器音频链接播放；返回本页后可继续点其他词。";
-      el.classList.remove("warn");
-    }
-    return;
-  }
   event.preventDefault();
   speakFrench(btn.dataset.say);
 });
