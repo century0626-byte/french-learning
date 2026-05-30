@@ -2173,14 +2173,19 @@ function getAudioPlayer(){
 }
 function playAudioUrl(url){
   return new Promise((resolve,reject)=>{
-    const audio=getAudioPlayer();
-    audio.pause();
-    audio.removeAttribute("src");
-    audio.load();
+    if(currentAudio){
+      currentAudio.pause();
+      currentAudio.onplay=null;
+      currentAudio.onerror=null;
+      currentAudio=null;
+    }
+    const audio=document.createElement("audio");
     audio.preload="auto";
     audio.playsInline=true;
     audio.onended=()=>resolve();
     audio.onerror=()=>reject(new Error("online audio failed"));
+    audio.onplay=()=>resolve();
+    currentAudio=audio;
     audio.src=url;
     audio.load();
     audio.play().catch(reject);
